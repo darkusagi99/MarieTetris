@@ -153,14 +153,14 @@ class GameActivity : AppCompatActivity() {
         paint.color = Color.WHITE
         for (i in 0..NUM_ROWS) {
             canvas.drawLine(
-                0f, i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), BOARD_WIDTH.toFloat(),
+                colWidth, i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), colWidth*11,
                 i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), paint
             )
         }
         for (i in 1..NUM_COLUMNS - 5) {
             canvas.drawLine(
                 i * colWidth, 0f,
-                i * colWidth, BOARD_HEIGHT.toFloat(), paint
+                i * colWidth, rowHeight*20, paint
             )
         }
         // Paint the tetris blocks
