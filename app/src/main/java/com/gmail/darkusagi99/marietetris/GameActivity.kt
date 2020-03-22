@@ -25,7 +25,7 @@ class GameActivity : AppCompatActivity() {
 
     var GAME_ROWS = 20
     var GAME_COLUMNS = 16
-    var START_COL = 4
+    var START_COL_DELTA = 8
     var NEW_PIECE_COL = 13
     val BOARD_HEIGHT = 1024
     val BOARD_WIDTH = 512
@@ -39,8 +39,10 @@ class GameActivity : AppCompatActivity() {
     var b = Array(4) { Point() }
     var c = Array(4) { Point() }
     var gameInProgress = false
+    var currentPiece = 0
     var next = 0
     var colorNext : Int = 0
+    var currentColor : Int = 0
 
     val figures = arrayOf(
     arrayOf(1, 3, 5, 7), // I
@@ -54,7 +56,9 @@ class GameActivity : AppCompatActivity() {
 
     val scoreArray = arrayOf(40, 100, 300, 1200)
 
-    private val colorList = arrayOf(Color.rgb(224, 255, 255),
+    private val colorList = arrayOf(
+        Color.BLACK,
+        Color.rgb(224, 255, 255),
         Color.rgb(220, 20, 60),
         Color.rgb(0, 250, 154),
         Color.rgb(186, 85, 211),
@@ -185,15 +189,33 @@ class GameActivity : AppCompatActivity() {
         return true
     }
 
-    fun getNextPiece() {
+    fun initNewPiece() {
 
         // Init first piece
         next = Random.nextInt(0, 7)
-        colorNext = next
+        colorNext = next + 1
         for (i in 0..3) {
             c[i].x = figures[next][i] % 2 + NEW_PIECE_COL
             c[i].y = figures[next][i] / 2
         }
+    }
+
+    fun getNextPiece() {
+
+        currentPiece=next;
+        currentColor=colorNext;
+        for (i in 0..3)
+        {
+            a[i].x = c[i].x - START_COL_DELTA;
+            a[i].y = c[i].y - 1;
+
+        }
+        if (!check()) {
+            gameInProgress = false
+        }
+
+        initNewPiece()
+
     }
 
     fun GameInit() {
@@ -205,15 +227,14 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
+        // Initialisation du premier bloc
+        initNewPiece()
         getNextPiece()
 
-        // Create an initial tetris block
-        //currentShapeAlive = CreateShape()
         // Start the game
-        //gameInProgress = true
-        //gamePaused = false
+        gameInProgress = true
         // Paint the initial matrix (frontend)
-        //PaintMatrix()
+        DrawScreen()
         // Set a timer
         //ChangeFastSpeedState(false)
     }
@@ -249,7 +270,11 @@ class GameActivity : AppCompatActivity() {
 
 
         // Paint current piece
+        paint.color = colorList[currentColor.toInt()]
+        for (i in 0..3) {
+            canvas.drawRect(a[i].x*colWidth, a[i].y*rowHeight, (a[i].x+1)*colWidth, (a[i].y+1)*rowHeight, paint)
 
+        }
 
         // Paint next piece
         paint.color = colorList[colorNext.toInt()]
