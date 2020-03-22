@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.random.Random
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -20,13 +22,45 @@ class GameActivity : AppCompatActivity() {
 
     var NUM_ROWS = 21
     var NUM_COLUMNS = 16
-    val BOARD_HEIGHT = 800
-    val BOARD_WIDTH = 720
+
+    var GAME_ROWS = 20
+    var GAME_COLUMNS = 16
+    var START_COL = 4
+    var NEW_PIECE_COL = 13
+    val BOARD_HEIGHT = 1024
+    val BOARD_WIDTH = 512
 
     lateinit var bitmap: Bitmap
     lateinit var canvas: Canvas
     lateinit var paint: Paint
     lateinit var linearLayout: LinearLayout
+    var gameMatrix = Array(GAME_ROWS) {IntArray(GAME_COLUMNS)}
+    var a = Array(4) { Point() }
+    var b = Array(4) { Point() }
+    var c = Array(4) { Point() }
+    var gameInProgress = false
+    var next = 0
+    var colorNext : Int = 0
+
+    val figures = arrayOf(
+    arrayOf(1, 3, 5, 7), // I
+    arrayOf(2, 4, 5, 7), // Z
+    arrayOf(3, 5, 4, 6), // S
+    arrayOf(3, 5, 4, 7), // T
+    arrayOf(2, 3, 5, 7), // L
+    arrayOf(3, 5, 7, 6), // J
+    arrayOf(2, 3, 4, 5) // O
+    )
+
+    val scoreArray = arrayOf(40, 100, 300, 1200)
+
+    private val colorList = arrayOf(Color.rgb(224, 255, 255),
+        Color.rgb(220, 20, 60),
+        Color.rgb(0, 250, 154),
+        Color.rgb(186, 85, 211),
+        Color.rgb(255, 165, 0),
+        Color.rgb(65, 105, 225),
+        Color.rgb(255, 255, 0))
 
     private val mHideHandler = Handler()
     private val mHidePart2Runnable = Runnable {
@@ -66,6 +100,8 @@ class GameActivity : AppCompatActivity() {
 
         mVisible = true
 
+        // Init game
+        GameInit()
 
         // Paint the initial matrix (frontend)
         DrawScreen()
@@ -137,6 +173,51 @@ class GameActivity : AppCompatActivity() {
         private val UI_ANIMATION_DELAY = 300
     }
 
+    fun check(): Boolean {
+        for (i in 0..3) {
+            if (a[i].x < 0 || a[i].x >= GAME_COLUMNS || a[i].y >= GAME_ROWS) {
+                return false
+            }
+            else if (gameMatrix[a[i].y][a[i].x] > 0) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun getNextPiece() {
+
+        // Init first piece
+        next = Random.nextInt(0, 7)
+        colorNext = next
+        for (i in 0..3) {
+            c[i].x = figures[next][i] % 2 + NEW_PIECE_COL
+            c[i].y = figures[next][i] / 2
+        }
+    }
+
+    fun GameInit() {
+
+        // Create the game board (backend)
+        for (i in 0 until GAME_ROWS) {
+            for (j in 0 until GAME_COLUMNS) {
+                gameMatrix[i][j] = 0
+            }
+        }
+
+        getNextPiece()
+
+        // Create an initial tetris block
+        //currentShapeAlive = CreateShape()
+        // Start the game
+        //gameInProgress = true
+        //gamePaused = false
+        // Paint the initial matrix (frontend)
+        //PaintMatrix()
+        // Set a timer
+        //ChangeFastSpeedState(false)
+    }
+
     fun DrawScreen() { // Paint the game board background
         paint.color = Color.BLACK
         canvas.drawRect(0f, 0f, BOARD_WIDTH.toFloat(), BOARD_HEIGHT.toFloat(), paint)
@@ -151,7 +232,7 @@ class GameActivity : AppCompatActivity() {
 
         // Paint the grid on the game board
         paint.color = Color.WHITE
-        for (i in 0..NUM_ROWS) {
+        for (i in 0..NUM_ROWS -1) {
             canvas.drawLine(
                 colWidth, i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), colWidth*11,
                 i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), paint
@@ -163,6 +244,20 @@ class GameActivity : AppCompatActivity() {
                 i * colWidth, rowHeight*20, paint
             )
         }
+
+        // Paint the block already placed
+
+
+        // Paint current piece
+
+
+        // Paint next piece
+        paint.color = colorList[colorNext.toInt()]
+        for (i in 0..3) {
+            canvas.drawRect(c[i].x*colWidth, c[i].y*rowHeight, (c[i].x+1)*colWidth, (c[i].y+1)*rowHeight, paint)
+
+        }
+
         // Paint the tetris blocks
         /*for (i in 3 until NUM_ROWS - 3) {
             for (j in 3 until NUM_COLUMNS - 3) {
