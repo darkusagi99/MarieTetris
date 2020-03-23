@@ -230,7 +230,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
     fun initNewPiece() {
 
-        // Init first piece
+        // Init new piece
         next = Random.nextInt(0, 7)
         colorNext = next + 1
         for (i in 0..3) {
@@ -246,7 +246,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         for (i in 0..3)
         {
             a[i].x = c[i].x - START_COL_DELTA;
-            a[i].y = c[i].y - 1;
+            a[i].y = c[i].y;
 
         }
         if (check() == false) {
