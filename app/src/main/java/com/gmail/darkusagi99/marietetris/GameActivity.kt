@@ -358,7 +358,6 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     override fun onSingleTapUp(e: MotionEvent?): Boolean {
 
         if (!gameInProgress) {
-            finish()
             return true
         }
         val display = windowManager.defaultDisplay
@@ -534,6 +533,11 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
     override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
+        if (gameInProgress == false) {
+
+            GameInit()
+        }
+
         return false
     }
 
