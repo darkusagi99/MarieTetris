@@ -7,10 +7,13 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GestureDetectorCompat
 import kotlin.random.Random
 
 
@@ -18,17 +21,19 @@ import kotlin.random.Random
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     var NUM_ROWS = 21
     var NUM_COLUMNS = 16
 
     var GAME_ROWS = 20
-    var GAME_COLUMNS = 16
+    var GAME_COLUMNS = 10
     var START_COL_DELTA = 8
     var NEW_PIECE_COL = 13
     val BOARD_HEIGHT = 1024
     val BOARD_WIDTH = 512
+    var SPEED_NORMAL = 500
+    var SPEED_FAST = 50
 
     lateinit var bitmap: Bitmap
     lateinit var canvas: Canvas
@@ -43,6 +48,8 @@ class GameActivity : AppCompatActivity() {
     var next = 0
     var colorNext : Int = 0
     var currentColor : Int = 0
+
+    private var gestureDetector: GestureDetectorCompat? = null
 
     val figures = arrayOf(
     arrayOf(1, 3, 5, 7), // I
@@ -103,6 +110,9 @@ class GameActivity : AppCompatActivity() {
         linearLayout = findViewById<View>(R.id.game_board) as LinearLayout
 
         mVisible = true
+
+        this.gestureDetector = GestureDetectorCompat(this, this)
+        gestureDetector?.setOnDoubleTapListener(this)
 
         // Init game
         GameInit()
@@ -179,7 +189,7 @@ class GameActivity : AppCompatActivity() {
 
     fun check(): Boolean {
         for (i in 0..3) {
-            if (a[i].x < 0 || a[i].x >= GAME_COLUMNS || a[i].y >= GAME_ROWS) {
+            if (a[i].x < 1 || a[i].x >= (GAME_COLUMNS + 1) || a[i].y >= GAME_ROWS) {
                 return false
             }
             else if (gameMatrix[a[i].y][a[i].x] > 0) {
@@ -210,7 +220,7 @@ class GameActivity : AppCompatActivity() {
             a[i].y = c[i].y - 1;
 
         }
-        if (!check()) {
+        if (check() == false) {
             gameInProgress = false
         }
 
@@ -358,6 +368,176 @@ class GameActivity : AppCompatActivity() {
         /*val textView =
             findViewById<View>(R.id.game_score_textview) as TextView
         textView.text = "Score: $score"*/
+    }
+
+    override fun onShowPress(e: MotionEvent?) {
+        // Ne rien faire
+    }
+
+    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+
+        if (!gameInProgress) {
+            finish()
+            return true
+        }
+        val display = windowManager.defaultDisplay
+        val size = android.graphics.Point()
+        display.getSize(size)
+        val width = size.x.toFloat()
+        val x = e!!.x
+        if (x <= width / 2.0) { // rotate left
+            rotatePiece()
+            DrawScreen()
+        } else { // rotate right
+            rotatePiece()
+            DrawScreen()
+        }
+        return true
+
+    }
+
+    fun rotatePiece() {
+
+        // Save previous position
+        for (i in 0..3) {
+            b[i].x = a[i].x
+            b[i].y = a[i].y
+        }
+
+        val p = a[1] //center of rotation
+
+        // Rotation
+        for (i in 0..3) {
+            val x = a[i].y - p.y
+            val y = a[i].x - p.x
+            a[i].x = p.x - x
+            a[i].y = p.y + y
+        }
+
+        checkRevert()
+
+    }
+
+
+
+    fun movePiece(dx : Int) {
+
+        // Save position and move (Left - Right)
+        for (i in 0..3) {
+            b[i].x = a[i].x
+            b[i].y = a[i].y
+            a[i].x += dx
+        }
+
+        checkRevert()
+    }
+
+    fun checkRevert() {
+        // Check OK ou retour arrière
+        if (check() == false) {
+            for (i in 0..3) {
+                a[i].x = b[i].x
+                a[i].y = b[i].y
+            }
+        }
+    }
+
+
+    /*fun movePieceDown() {
+
+        delay=0.05
+
+    }*/
+
+    override fun onDown(e: MotionEvent?): Boolean {
+        // ne rien faire
+        return false
+    }
+
+    override fun onFling(
+        e1: MotionEvent?,
+        e2: MotionEvent?,
+        velocityX: Float,
+        velocityY: Float
+    ): Boolean {
+
+        if (!gameInProgress) return false
+
+        try {
+            val x1 = e1!!.x
+            val y1 = e1.y
+            val x2 = e2!!.x
+            val y2 = e2.y
+            val angle: Double = getAngle(x1, y1, x2, y2)
+            if (inRange(angle, 45f, 135f)) { // UP
+                // Ne rien faire pour l'instant
+            } else if (inRange(angle, 0f, 45f) || inRange(angle, 315f, 360f)) { // RIGHT
+                // Vers la droite
+                movePiece(1)
+                DrawScreen()
+            } else if (inRange(angle, 225f, 315f)) { // DOWN
+                // Vers le bas
+                //ChangeFastSpeedState(true)
+            } else { // LEFT
+                // Vers la gauche
+                movePiece(-1)
+                DrawScreen()
+            }
+        } catch (e: Exception) { // nothing
+        }
+        return true
+
+    }
+
+    fun getAngle(
+        x1: Float,
+        y1: Float,
+        x2: Float,
+        y2: Float
+    ): Double {
+        val rad =
+            Math.atan2(y1 - y2.toDouble(), x2 - x1.toDouble()) + Math.PI
+        return (rad * 180 / Math.PI + 180) % 360
+    }
+
+    override fun onScroll(
+        e1: MotionEvent?,
+        e2: MotionEvent?,
+        distanceX: Float,
+        distanceY: Float
+    ): Boolean {
+        // ne rien faire
+        return false
+    }
+
+    private fun inRange(
+        angle: Double,
+        init: Float,
+        end: Float
+    ): Boolean {
+        return angle >= init && angle < end
+    }
+
+    override fun onLongPress(e: MotionEvent?) {
+        // ne rien faire
+    }
+
+    override fun onDoubleTap(e: MotionEvent?): Boolean {
+        return false
+    }
+
+    override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
+        return false
+    }
+
+    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        return false
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        this.gestureDetector?.onTouchEvent(event)
+        // Be sure to call the superclass implementation
+        return super.onTouchEvent(event)
     }
 
 }
