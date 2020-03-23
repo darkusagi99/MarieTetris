@@ -192,7 +192,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
             if (a[i].x < 1 || a[i].x >= (GAME_COLUMNS + 1) || a[i].y >= GAME_ROWS) {
                 return false
             }
-            else if (gameMatrix[a[i].y][a[i].x] > 0) {
+            else if (gameMatrix[a[i].y][a[i].x-1] > 0) {
                 return false
             }
         }
@@ -277,7 +277,16 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         }
 
         // Paint the block already placed
+        // Paint borders to the tetris blocks
+        for (i in 0 until GAME_ROWS) {
+            for (j in 0 until GAME_COLUMNS) {
+                if (gameMatrix.get(i).get(j) != 0) {
+                    paint.color = colorList[gameMatrix.get(i).get(j)]
 
+                    canvas.drawRect((j+1)*colWidth, i*rowHeight, (j+2) * colWidth, (i+1)*rowHeight, paint)
+                }
+            }
+        }
 
         // Paint current piece
         paint.color = colorList[currentColor.toInt()]
@@ -293,75 +302,6 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
         }
 
-        // Paint the tetris blocks
-        /*for (i in 3 until NUM_ROWS - 3) {
-            for (j in 3 until NUM_COLUMNS - 3) {
-                if (gameMatrix.get(i).get(j).getState() == 1) {
-                    paint.color = gameMatrix.get(i).get(j).getColor()
-                    canvas.drawRect(
-                        (j - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        (j + 1 - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i + 1 - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        paint
-                    )
-                }
-            }
-        }
-        // Paint borders to the tetris blocks
-        for (i in 3 until NUM_ROWS - 3) {
-            for (j in 3 until NUM_COLUMNS - 3) {
-                if (gameMatrix.get(i).get(j).getState() == 1) {
-                    paint.color = Color.BLACK
-                    canvas.drawLine(
-                        (j - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        (j - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i + 1 - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        paint
-                    )
-                    canvas.drawLine(
-                        (j - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        (j + 1 - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        paint
-                    )
-                    canvas.drawLine(
-                        (j + 1 - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        (j + 1 - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i + 1 - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        paint
-                    )
-                    canvas.drawLine(
-                        (j - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i + 1 - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        (j + 1 - 3) * (BOARD_WIDTH / (NUM_COLUMNS - 6)).toFloat(),
-                        (i + 1 - 3) * (BOARD_HEIGHT / (NUM_ROWS - 6)).toFloat(),
-                        paint
-                    )
-                }
-            }
-        }*/
-        /*if (!gameInProgress) {
-            val textView =
-                findViewById<View>(R.id.game_over_textview) as TextView
-            textView.visibility = View.VISIBLE
-            val textView2 =
-                findViewById<View>(R.id.game_over_textview2) as TextView
-            textView2.visibility = View.VISIBLE
-        } else if (gamePaused) {
-            paint.color = Color.WHITE
-            paint.textAlign = Paint.Align.CENTER
-            paint.textSize = 60f
-            canvas.drawText(
-                "GAME PAUSED",
-                (BOARD_WIDTH / 2.0).toFloat(),
-                (BOARD_HEIGHT / 2.0).toFloat(),
-                paint
-            )
-        }*/
         // Display the current painting
         linearLayout.setBackgroundDrawable(BitmapDrawable(bitmap))
         // Update the score textview
@@ -432,6 +372,28 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         checkRevert()
     }
 
+    fun moveDown() {
+
+        for (i in 0..3) {
+            b[i].x = a[i].x
+            b[i].y = a[i].y
+            a[i].y += 1
+        }
+
+        if (check() == false) {
+            for (i in 0..3) {
+                gameMatrix[b[i].y][b[i].x-1] = currentColor
+            }
+
+            getNextPiece()
+
+            if (check() == false) {
+                gameInProgress = false
+            }
+        }
+
+    }
+
     fun checkRevert() {
         // Check OK ou retour arrière
         if (check() == false) {
@@ -477,7 +439,8 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
                 DrawScreen()
             } else if (inRange(angle, 225f, 315f)) { // DOWN
                 // Vers le bas
-                //ChangeFastSpeedState(true)
+                moveDown()
+                DrawScreen()
             } else { // LEFT
                 // Vers la gauche
                 movePiece(-1)
