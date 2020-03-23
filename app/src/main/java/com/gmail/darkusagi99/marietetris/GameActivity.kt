@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
+import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.os.Handler
 import android.view.GestureDetector
@@ -48,6 +49,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     var next = 0
     var colorNext : Int = 0
     var currentColor : Int = 0
+    var scoreVal = 0
 
     private var gestureDetector: GestureDetectorCompat? = null
 
@@ -199,6 +201,31 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         return true
     }
 
+    fun checkLines() {
+
+        var k = GAME_ROWS - 1
+        var nbLignes = 0
+        for (i in GAME_ROWS - 1 downTo 1) {
+            var count = 0
+            for (j in 0 until GAME_COLUMNS) {
+                if (gameMatrix[i][j] > 0f) {
+                    count++
+                }
+                gameMatrix[k][j] = gameMatrix[i][j]
+            }
+            if (count < GAME_COLUMNS) {
+                k--
+            } else {
+                nbLignes++
+            }
+        }
+
+        if (nbLignes > 0) {
+            scoreVal += scoreArray.get(nbLignes - 1)
+        }
+
+    }
+
     fun initNewPiece() {
 
         // Init first piece
@@ -305,9 +332,9 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         // Display the current painting
         linearLayout.setBackgroundDrawable(BitmapDrawable(bitmap))
         // Update the score textview
-        /*val textView =
-            findViewById<View>(R.id.game_score_textview) as TextView
-        textView.text = "Score: $score"*/
+        val textView =
+            findViewById<View>(R.id.scoreText) as TextView
+        textView.text = "Score: $scoreVal"
     }
 
     override fun onShowPress(e: MotionEvent?) {
@@ -384,6 +411,8 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
             for (i in 0..3) {
                 gameMatrix[b[i].y][b[i].x-1] = currentColor
             }
+
+            checkLines()
 
             getNextPiece()
 
