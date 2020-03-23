@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
-import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.os.Handler
 import android.view.GestureDetector
@@ -191,6 +190,9 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
     fun check(): Boolean {
         for (i in 0..3) {
+            if (a[i].y < 0) {
+                return false
+            }
             if (a[i].x < 1 || a[i].x >= (GAME_COLUMNS + 1) || a[i].y >= GAME_ROWS) {
                 return false
             }
