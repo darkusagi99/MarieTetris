@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.postDelayed
 import androidx.core.view.GestureDetectorCompat
 import kotlin.random.Random
 
@@ -32,8 +33,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     var NEW_PIECE_COL = 13
     val BOARD_HEIGHT = 1024
     val BOARD_WIDTH = 512
-    var SPEED_NORMAL = 500
-    var SPEED_FAST = 50
+    var SPEED_DOWN : Long = 500
 
     lateinit var bitmap: Bitmap
     lateinit var canvas: Canvas
@@ -51,6 +51,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     var scoreVal = 0
 
     private var gestureDetector: GestureDetectorCompat? = null
+    val handler = Handler()
 
     val figures = arrayOf(
     arrayOf(1, 3, 5, 7), // I
@@ -275,8 +276,19 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         // Paint the initial matrix (frontend)
         DrawScreen()
         // Set a timer
-        //ChangeFastSpeedState(false)
+        handler.postDelayed(downRunnable, SPEED_DOWN)
     }
+
+    val downRunnable = object: Runnable {
+        override fun run() {
+            if (gameInProgress == true) {
+                moveDown()
+                DrawScreen()
+                handler.postDelayed(this, SPEED_DOWN)
+            }
+        }
+    }
+
 
     fun DrawScreen() { // Paint the game board background
         paint.color = Color.BLACK
@@ -422,8 +434,9 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
                 gameInProgress = false
             }
         }
-
     }
+
+
 
     fun checkRevert() {
         // Check OK ou retour arrière
