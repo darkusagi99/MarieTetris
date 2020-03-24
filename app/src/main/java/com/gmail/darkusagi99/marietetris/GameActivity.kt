@@ -11,9 +11,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.postDelayed
 import androidx.core.view.GestureDetectorCompat
 import kotlin.random.Random
 
