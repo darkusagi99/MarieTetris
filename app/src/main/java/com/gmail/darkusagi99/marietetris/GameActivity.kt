@@ -29,7 +29,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     var GAME_COLUMNS = 10
     var START_COL_DELTA = 8
     var NEW_PIECE_COL = 13
-    val BOARD_HEIGHT = 990
+    val BOARD_HEIGHT = 1280
     val BOARD_WIDTH = 720
     var SPEED_DOWN : Long = 500
 
