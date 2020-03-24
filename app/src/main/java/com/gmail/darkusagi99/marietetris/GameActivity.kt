@@ -267,6 +267,9 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
             }
         }
 
+        // RAZ du score
+        scoreVal = 0
+
         // Initialisation du premier bloc
         initNewPiece()
         getNextPiece()
@@ -342,6 +345,8 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
             canvas.drawRect(c[i].x*colWidth, c[i].y*rowHeight, (c[i].x+1)*colWidth, (c[i].y+1)*rowHeight, paint)
 
         }
+
+        //canvas.drawText("Score: $scoreVal", )
 
         // Display the current painting
         linearLayout.setBackgroundDrawable(BitmapDrawable(bitmap))

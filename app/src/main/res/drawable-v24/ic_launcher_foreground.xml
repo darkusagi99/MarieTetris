@@ -8,14 +8,14 @@
     <path
         android:fillColor="#FF0000"
         android:fillType="nonZero"
-        android:pathData="M30,18
-                          L 30,66
-                          L 54, 66
-                          L 54, 92
-                          L 78 92
-                          L 78 42
-                          L 54 42
-                          L 54 18"
+        android:pathData="M35,27
+                          L 35,60
+                          L 54, 60
+                          L 54, 78
+                          L 72 78
+                          L 72 45
+                          L 54 45
+                          L 54 27"
         android:strokeWidth="1" />
 
 </vector>
