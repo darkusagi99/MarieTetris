@@ -24,15 +24,15 @@ import kotlin.random.Random
  */
 class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
-    var NUM_ROWS = 21
+    var NUM_ROWS = 22
     var NUM_COLUMNS = 16
 
     var GAME_ROWS = 20
     var GAME_COLUMNS = 10
     var START_COL_DELTA = 8
     var NEW_PIECE_COL = 13
-    val BOARD_HEIGHT = 1024
-    val BOARD_WIDTH = 512
+    val BOARD_HEIGHT = 990
+    val BOARD_WIDTH = 720
     var SPEED_DOWN : Long = 500
 
     lateinit var bitmap: Bitmap
@@ -102,9 +102,6 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
         setContentView(R.layout.activity_game)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val scoreField = findViewById<TextView>(R.id.scoreText)
-        scoreField.text = "0"
 
         bitmap = Bitmap.createBitmap(BOARD_WIDTH, BOARD_HEIGHT, Bitmap.Config.ARGB_8888)
         canvas = Canvas(bitmap)
@@ -301,16 +298,16 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         val rowHeight = (BOARD_HEIGHT / (NUM_ROWS)).toFloat()
 
         paint.color = Color.LTGRAY
-        canvas.drawRect(0f, 0f, colWidth, BOARD_HEIGHT.toFloat(), paint)
-        canvas.drawRect(colWidth*11, 0f, colWidth*12, BOARD_HEIGHT.toFloat(), paint)
-        canvas.drawRect(0f, rowHeight*20, colWidth*12, BOARD_HEIGHT.toFloat(), paint)
+        canvas.drawRect(0f, 0f, colWidth, rowHeight*21, paint)
+        canvas.drawRect(colWidth*11, 0f, colWidth*12, rowHeight*21, paint)
+        canvas.drawRect(0f, rowHeight*20, colWidth*12, rowHeight*21, paint)
 
         // Paint the grid on the game board
         paint.color = Color.WHITE
-        for (i in 0..NUM_ROWS -1) {
+        for (i in 0..NUM_ROWS -2) {
             canvas.drawLine(
-                colWidth, i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), colWidth*11,
-                i * (BOARD_HEIGHT / (NUM_ROWS)).toFloat(), paint
+                colWidth, i * rowHeight, colWidth*11,
+                i * rowHeight, paint
             )
         }
         for (i in 1..NUM_COLUMNS - 5) {
@@ -346,14 +343,12 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
         }
 
-        //canvas.drawText("Score: $scoreVal", )
+        paint.color = Color.WHITE
+        paint.textSize = 60f
+        canvas.drawText(getString(R.string.score_text, scoreVal), 30f, rowHeight*22, paint)
 
         // Display the current painting
         linearLayout.setBackgroundDrawable(BitmapDrawable(bitmap))
-        // Update the score textview
-        val textView =
-            findViewById<View>(R.id.scoreText) as TextView
-        textView.text = getString(R.string.score_text, scoreVal)
     }
 
     override fun onShowPress(e: MotionEvent?) {
@@ -453,12 +448,6 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
 
-    /*fun movePieceDown() {
-
-        delay=0.05
-
-    }*/
-
     override fun onDown(e: MotionEvent?): Boolean {
         // ne rien faire
         return false
@@ -557,3 +546,4 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
 }
+

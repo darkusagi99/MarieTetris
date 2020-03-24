@@ -6,28 +6,11 @@
     android:background="#000000"
     tools:context=".GameActivity">
 
-
     <LinearLayout
+        android:id="@+id/game_board"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/game_board"
-            android:layout_marginLeft="40dp"
-            android:layout_width="320dp"
-            android:layout_height="420dp"
-            android:orientation="horizontal">
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/scoreText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="0"
-            android:textSize="40dp"
-            android:layout_marginLeft="10dp"
-            android:textColor="#FFFFFF"/>
+        android:orientation="horizontal">
     </LinearLayout>
 
 </FrameLayout>
