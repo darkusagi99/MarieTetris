@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MarieTetris</string>
     <string name="title_activity_game">Tetris</string>
+    <string name="score_text">Score : %1$d</string>
 </resources>

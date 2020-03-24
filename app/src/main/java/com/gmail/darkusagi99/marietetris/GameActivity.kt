@@ -242,12 +242,12 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
     fun getNextPiece() {
 
-        currentPiece=next;
-        currentColor=colorNext;
+        currentPiece=next
+        currentColor=colorNext
         for (i in 0..3)
         {
-            a[i].x = c[i].x - START_COL_DELTA;
-            a[i].y = c[i].y;
+            a[i].x = c[i].x - START_COL_DELTA
+            a[i].y = c[i].y
 
         }
         if (check() == false) {
@@ -333,14 +333,14 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         }
 
         // Paint current piece
-        paint.color = colorList[currentColor.toInt()]
+        paint.color = colorList[currentColor]
         for (i in 0..3) {
             canvas.drawRect(a[i].x*colWidth, a[i].y*rowHeight, (a[i].x+1)*colWidth, (a[i].y+1)*rowHeight, paint)
 
         }
 
         // Paint next piece
-        paint.color = colorList[colorNext.toInt()]
+        paint.color = colorList[colorNext]
         for (i in 0..3) {
             canvas.drawRect(c[i].x*colWidth, c[i].y*rowHeight, (c[i].x+1)*colWidth, (c[i].y+1)*rowHeight, paint)
 
@@ -353,7 +353,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         // Update the score textview
         val textView =
             findViewById<View>(R.id.scoreText) as TextView
-        textView.text = "Score: $scoreVal"
+        textView.text = getString(R.string.score_text, scoreVal)
     }
 
     override fun onShowPress(e: MotionEvent?) {
