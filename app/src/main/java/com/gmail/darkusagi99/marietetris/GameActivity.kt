@@ -42,6 +42,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     var b = Array(4) { Point() }
     var c = Array(4) { Point() }
     var gameInProgress = false
+    var gameInPause = false
     var currentPiece = 0
     var next = 0
     var colorNext : Int = 0
@@ -271,6 +272,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
 
         // Start the game
         gameInProgress = true
+        gameInPause = false
         // Paint the initial matrix (frontend)
         DrawScreen()
         // Set a timer
@@ -327,11 +329,14 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
             }
         }
 
-        // Paint current piece
-        paint.color = colorList[currentColor]
-        for (i in 0..3) {
-            canvas.drawRect(a[i].x*colWidth, a[i].y*rowHeight, (a[i].x+1)*colWidth, (a[i].y+1)*rowHeight, paint)
 
+        // Paint current piece - not displayed in pause
+        paint.color = colorList[currentColor]
+        if ( !gameInPause) {
+            for (i in 0..3) {
+                canvas.drawRect(a[i].x*colWidth, a[i].y*rowHeight, (a[i].x+1)*colWidth, (a[i].y+1)*rowHeight, paint)
+
+            }
         }
 
         // Paint next piece
@@ -411,6 +416,8 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
     fun moveDown() {
+
+        if (gameInPause) { return }
 
         for (i in 0..3) {
             b[i].x = a[i].x
@@ -506,6 +513,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     ): Boolean {
         // ne rien faire
         return false
+
     }
 
     private fun inRange(
@@ -517,8 +525,11 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
     override fun onLongPress(e: MotionEvent?) {
-        // ne rien faire
+        gameInPause = ! gameInPause
+
     }
+
+
 
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         return false
