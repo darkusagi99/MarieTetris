@@ -354,11 +354,11 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         linearLayout.setBackgroundDrawable(BitmapDrawable(bitmap))
     }
 
-    override fun onShowPress(e: MotionEvent?) {
+    override fun onShowPress(p0: MotionEvent) {
         // Ne rien faire
     }
 
-    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+    override fun onSingleTapUp(p0: MotionEvent): Boolean {
 
         if (!gameInProgress) {
             return true
@@ -367,7 +367,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         val size = android.graphics.Point()
         display.getSize(size)
         val width = size.x.toFloat()
-        val x = e!!.x
+        val x = p0!!.x
         if (x <= width / 2.0) { // rotate left
             rotatePiece()
             DrawScreen()
@@ -453,14 +453,14 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
 
-    override fun onDown(e: MotionEvent?): Boolean {
+    override fun onDown(p0: MotionEvent): Boolean {
         // ne rien faire
         return false
     }
 
     override fun onFling(
-        e1: MotionEvent?,
-        e2: MotionEvent?,
+        p0: MotionEvent,
+        p1: MotionEvent,
         velocityX: Float,
         velocityY: Float
     ): Boolean {
@@ -468,10 +468,10 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         if (!gameInProgress) return false
 
         try {
-            val x1 = e1!!.x
-            val y1 = e1.y
-            val x2 = e2!!.x
-            val y2 = e2.y
+            val x1 = p0!!.x
+            val y1 = p0.y
+            val x2 = p1!!.x
+            val y2 = p1.y
             val angle: Double = getAngle(x1, y1, x2, y2)
             if (inRange(angle, 45f, 135f)) { // UP
                 // Ne rien faire pour l'instant
@@ -506,8 +506,8 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
     }
 
     override fun onScroll(
-        e1: MotionEvent?,
-        e2: MotionEvent?,
+        p0: MotionEvent,
+        p1: MotionEvent,
         distanceX: Float,
         distanceY: Float
     ): Boolean {
@@ -524,18 +524,18 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         return angle >= init && angle < end
     }
 
-    override fun onLongPress(e: MotionEvent?) {
+    override fun onLongPress(p0: MotionEvent) {
         gameInPause = ! gameInPause
 
     }
 
 
 
-    override fun onDoubleTap(e: MotionEvent?): Boolean {
+    override fun onDoubleTap(p0: MotionEvent): Boolean {
         return false
     }
 
-    override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
+    override fun onDoubleTapEvent(p0: MotionEvent): Boolean {
         if (gameInProgress == false) {
 
             GameInit()
@@ -544,7 +544,7 @@ class GameActivity : AppCompatActivity(), GestureDetector.OnGestureListener, Ges
         return false
     }
 
-    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+    override fun onSingleTapConfirmed(p0: MotionEvent): Boolean {
         return false
     }
 
